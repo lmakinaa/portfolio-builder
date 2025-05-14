@@ -1,8 +1,9 @@
 import { useEffect, useRef } from 'react';
 import { ArrowDown, Github as GitHub, ExternalLink } from 'lucide-react';
 import { useTheme } from '@/app/contexts/ThemeContext';
+import { Portfolio } from '@/app/types';
 
-const Hero = () => {
+const Hero = ({title, position, summary}: Portfolio) => {
   const heroRef = useRef<HTMLDivElement>(null);
   const { isDarkMode } = useTheme();
 
@@ -53,16 +54,14 @@ const Hero = () => {
     >
       <div className="max-w-3xl mx-auto text-center">
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 leading-tight">
-          <span className="block">Hi, I'm Lamkina</span>
+          <span className="block">Hi, I'm {title}</span>
           <span className="block mt-2 bg-gradient-to-r from-purple-500 via-indigo-500 to-blue-500 bg-clip-text text-transparent">
-            Software Engineer
+            {position}
           </span>
         </h1>
         
         <p className={`text-lg md:text-xl mb-8 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-          I build scalable, performant applications with modern architectures. 
-          Specializing in full-stack development, my expertise includes React, 
-          Django, FastAPI, and microservices architecture.
+          {summary}
         </p>
         
         <div className="flex justify-center space-x-4 mb-12">

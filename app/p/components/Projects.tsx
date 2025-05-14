@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { Github as GitHub, ExternalLink, Code } from 'lucide-react';
 import { useTheme } from '@/app/contexts/ThemeContext';
-import { projects } from '@/app/data/projects';
 import ProjectCard from './ProjectCard';
+import { Portfolio, Project } from '@/app/types';
 
-const Projects = () => {
+const Projects = ({ projects }: Portfolio) => {
   const [activeProject, setActiveProject] = useState<number | null>(null);
   const { isDarkMode } = useTheme();
 

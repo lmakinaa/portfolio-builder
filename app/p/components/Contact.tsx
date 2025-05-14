@@ -2,8 +2,9 @@ import { useState } from 'react';
 import { Send, Mail, Github as GitHub, Linkedin } from 'lucide-react';
 import { useTheme } from '@/app/contexts/ThemeContext';
 import { motion } from 'framer-motion';
+import { Portfolio } from '@/app/types';
 
-const Contact = () => {
+const Contact = ({email, github, linkedin}: Portfolio) => {
   const { isDarkMode } = useTheme();
   const [formData, setFormData] = useState({
     name: '',
@@ -188,7 +189,7 @@ const Contact = () => {
                       isDarkMode ? 'text-indigo-400 hover:text-indigo-300' : 'text-indigo-600 hover:text-indigo-700'
                     }`}
                   >
-                    contact@example.com
+                    {email}
                   </a>
                 </div>
               </div>
@@ -202,14 +203,14 @@ const Contact = () => {
                 <div>
                   <h4 className="text-sm font-semibold mb-1">GitHub</h4>
                   <a 
-                    href="https://github.com/lmakinaa" 
+                    href={github} 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className={`text-sm ${
                       isDarkMode ? 'text-indigo-400 hover:text-indigo-300' : 'text-indigo-600 hover:text-indigo-700'
                     }`}
                   >
-                    github.com/lmakinaa
+                    {github}
                   </a>
                 </div>
               </div>
@@ -223,12 +224,12 @@ const Contact = () => {
                 <div>
                   <h4 className="text-sm font-semibold mb-1">LinkedIn</h4>
                   <a 
-                    href="#" 
+                    href={linkedin} 
                     className={`text-sm ${
                       isDarkMode ? 'text-indigo-400 hover:text-indigo-300' : 'text-indigo-600 hover:text-indigo-700'
                     }`}
                   >
-                    linkedin.com/in/lamkina
+                    {linkedin}
                   </a>
                 </div>
               </div>

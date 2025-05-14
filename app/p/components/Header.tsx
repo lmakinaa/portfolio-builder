@@ -1,12 +1,15 @@
 import { useState, useEffect } from 'react';
 import { Menu, X, Moon, Sun } from 'lucide-react';
 import { useTheme } from '@/app/contexts/ThemeContext';
+import { Portfolio } from '@/app/types';
 
 interface HeaderProps {
   activeSection: string;
+  title: String
 }
 
-const Header: React.FC<HeaderProps> = ({ activeSection }) => {
+
+const Header = ({ activeSection, title }: HeaderProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const { isDarkMode, toggleTheme } = useTheme();
@@ -48,7 +51,7 @@ const Header: React.FC<HeaderProps> = ({ activeSection }) => {
           <div className="flex items-center">
             <h1 className="text-xl font-bold tracking-tight">
               <span className="bg-gradient-to-r from-purple-500 to-indigo-500 bg-clip-text text-transparent">
-                Lamkina
+                {title}
               </span>
             </h1>
           </div>

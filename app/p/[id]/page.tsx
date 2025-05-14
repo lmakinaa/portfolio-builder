@@ -1,53 +1,26 @@
 "use client";
-import { useState, useEffect } from 'react';
-import Header from '@/app/p/components/Header';
-import Hero from '@/app/p/components/Hero';
-import Projects from '@/app/p/components/Projects';
-import Skills from '@/app/p/components/Skills';
-import Contact from '@/app/p/components/Contact';
-import Footer from '@/app/p/components/Footer';
-import { useTheme } from '@/app/contexts/ThemeContext';
+
+import ProfilePage from '../components/PortfolioPage';
+import { projects } from '@/app/data/projects';
+import { Portfolio } from '@/app/types';
+
+const testData: Portfolio = {
+  title: "Lmakina",
+  position: "Software Engineer",
+  summary: "I build scalable, performant applications with modern architectures. \
+            Specializing in full-stack development, my expertise includes React, \
+            Django, FastAPI, and microservices architecture.",
+  projects: projects, // assuming 'projects' matches the Portfolio type
+  skills: [],
+  email: "lmakina@example.com",
+  linkedin: "https://linkedin.com/in/lmakina",
+  github: "https://github.com/lmakinaa",
+  phone: "null"
+};
 
 export default function Page() {
-  const [activeSection, setActiveSection] = useState('hero');
-  const { isDarkMode } = useTheme();
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const sections = ['hero', 'projects', 'skills', 'contact'];
-      const scrollPosition = window.scrollY + 100;
-
-      for (const section of sections) {
-        const element = document.getElementById(section);
-        if (!element) continue;
-
-        const offsetTop = element.offsetTop;
-        const offsetHeight = element.offsetHeight;
-
-        if (
-          scrollPosition >= offsetTop &&
-          scrollPosition < offsetTop + offsetHeight
-        ) {
-          setActiveSection(section);
-          break;
-        }
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   return (
-    <div className={`min-h-screen ${isDarkMode ? 'bg-[#121826] text-white' : 'bg-gray-50 text-gray-900'} transition-colors duration-300`}>
-      <Header activeSection={activeSection} />
-      <main>
-        <Hero />
-        <Projects />
-        <Skills />
-        <Contact />
-      </main>
-      <Footer />
-    </div>
+    <ProfilePage {...testData} />
   );
 }
