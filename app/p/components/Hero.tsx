@@ -1,9 +1,21 @@
+'use client';
+
 import { useEffect, useRef } from 'react';
 import { ArrowDown, Github as GitHub, ExternalLink } from 'lucide-react';
 import { useTheme } from '@/app/contexts/ThemeContext';
-import { Portfolio } from '@/app/types';
 
-const Hero = ({title, position, summary}: Portfolio) => {
+interface HeroProps {
+  title: string;
+  position: string;
+  summary: string;
+  // customStyles?: {
+  //   primaryColor?: string;
+  //   secondaryColor?: string;
+  //   fontFamily?: string;
+  // };
+}
+
+export default function Hero({ title, position, summary }: HeroProps) {
   const heroRef = useRef<HTMLDivElement>(null);
   const { isDarkMode } = useTheme();
 
@@ -54,7 +66,7 @@ const Hero = ({title, position, summary}: Portfolio) => {
     >
       <div className="max-w-3xl mx-auto text-center">
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 leading-tight">
-          <span className="block">Hi, I'm {title}</span>
+          <span className="block">Hi, I&apos;m {title}</span>
           <span className="block mt-2 bg-gradient-to-r from-purple-500 via-indigo-500 to-blue-500 bg-clip-text text-transparent">
             {position}
           </span>
@@ -101,6 +113,4 @@ const Hero = ({title, position, summary}: Portfolio) => {
       </div>
     </section>
   );
-};
-
-export default Hero;
+}

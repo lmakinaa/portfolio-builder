@@ -1,13 +1,11 @@
 "use client";
 
-import { useState } from 'react';
 import { useTheme } from '@/app/contexts/ThemeContext';
 import { Moon, Sun, ArrowRight, Code, Palette, Layout, Rocket, Shield, Users } from 'lucide-react';
 import Link from 'next/link';
 
 export default function Home() {
   const { isDarkMode, toggleTheme } = useTheme();
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
     <div className={`min-h-screen ${isDarkMode ? 'bg-[#121826] text-white' : 'bg-gray-50 text-gray-900'}`}>

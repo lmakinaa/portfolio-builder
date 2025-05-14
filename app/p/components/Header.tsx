@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Menu, X, Moon, Sun } from 'lucide-react';
 import { useTheme } from '@/app/contexts/ThemeContext';
-import { Portfolio } from '@/app/types';
 
 interface HeaderProps {
   activeSection: string;
-  title: String
+  title: string
 }
 
 

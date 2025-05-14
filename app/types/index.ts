@@ -7,10 +7,9 @@ export interface Project {
   role: string;
 }
 
-interface SkillsSection {
-  title: string;
-  icon: string;
-  skills: string[];
+interface SkillsCategory {
+  name: string;
+  items: string[];
 }
 
 export interface Portfolio {
@@ -18,7 +17,7 @@ export interface Portfolio {
   position: string;
   summary: string;
   projects: Project[];
-  skills: SkillsSection[];
+  skills: SkillsCategory[];
   email: string;
   github: string;
   linkedin: string;

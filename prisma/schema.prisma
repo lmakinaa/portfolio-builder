@@ -1,0 +1,54 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  hashedPassword      String
+  portfolio     Portfolio?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Portfolio {
+  id          String    @id @default(cuid())
+  userId      String    @unique
+  user        User      @relation(fields: [userId], references: [id])
+  title       String
+  position    String
+  description String
+  projects    Project[]
+  skills      SkillsCategory[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Project {
+  id            String   @id @default(cuid())
+  portfolioId   String
+  portfolio     Portfolio @relation(fields: [portfolioId], references: [id])
+  title         String
+  description   String
+  imageUrl      String?
+  githubUrl     String?
+  demoUrl       String?
+  technologies  String[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model SkillsCategory {
+  id          String    @id @default(cuid())
+  portfolioId String
+  portfolio   Portfolio @relation(fields: [portfolioId], references: [id])
+  name        String
+  items       String[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}

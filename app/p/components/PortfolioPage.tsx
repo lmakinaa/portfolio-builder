@@ -8,7 +8,6 @@ import Skills from '@/app/p/components/Skills';
 import Contact from '@/app/p/components/Contact';
 import Footer from '@/app/p/components/Footer';
 import { useTheme } from '@/app/contexts/ThemeContext';
-import {projects} from '@/app/data/projects';
 import {Portfolio} from '@/app/types/index'
 
 
@@ -46,7 +45,7 @@ export default function PortfolioPage(portfolioData: Portfolio) {
     <div className={`min-h-screen ${isDarkMode ? 'bg-[#121826] text-white' : 'bg-gray-50 text-gray-900'} transition-colors duration-300`}>
       <Header activeSection={activeSection} title={portfolioData.title} />
       <main>
-        <Hero {...portfolioData} />
+        <Hero title={portfolioData.title} summary={portfolioData.summary} position={portfolioData.position} />
         <Projects {...portfolioData} />
         <Skills />
         <Contact {...portfolioData} />

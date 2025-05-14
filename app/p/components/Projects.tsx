@@ -1,8 +1,7 @@
 import { useState } from 'react';
-import { Github as GitHub, ExternalLink, Code } from 'lucide-react';
 import { useTheme } from '@/app/contexts/ThemeContext';
 import ProjectCard from './ProjectCard';
-import { Portfolio, Project } from '@/app/types';
+import { Portfolio } from '@/app/types';
 
 const Projects = ({ projects }: Portfolio) => {
   const [activeProject, setActiveProject] = useState<number | null>(null);
