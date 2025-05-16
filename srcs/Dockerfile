@@ -6,7 +6,7 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
 
-COPY --from=builder /app/prisma ./prisma
+COPY prisma ./prisma
 RUN npx prisma generate
 
 # Copy the rest of the project
@@ -24,9 +24,10 @@ COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
-COPY --from=builder /app/next.config.js ./
-COPY --from=builder /app/middleware.js ./
+COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/next.config.ts ./
+COPY --from=builder /app/middleware.ts ./
 
 # Expose and run
 EXPOSE 3000
-CMD ["npm", "start"]
+CMD ["sh", "-c", "npx prisma migrate deploy && npm start"]
