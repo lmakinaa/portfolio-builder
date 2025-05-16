@@ -1,5 +1,6 @@
 services:
   db:
+    container_name: my_portfolio_db
     image: postgres
     environment:
       POSTGRES_USER: myuser
@@ -13,10 +14,10 @@ services:
   app:
     build: ./srcs
     ports:
-      - "3000:3000"
+      - "80:3000"
     environment:
       JWT_SECRET: testsecretkey-mchina-fiha
-      DATABASE_URL: "postgresql://myuser:mypassword@db:5432/mydb?schema=public"
+      DATABASE_URL: "postgresql://myuser:mypassword@my_portfolio_db:5432/mydb?schema=public"
     depends_on:
       - db
 
