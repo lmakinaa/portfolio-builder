@@ -18,9 +18,6 @@ services:
     environment:
       JWT_SECRET: testsecretkey-mchina-fiha
       DATABASE_URL: "postgresql://myuser:mypassword@my_portfolio_db:5432/mydb?schema=public"
-    volumes:
-      - ./srcs:/app
-      - /app/node_modules  # Prevent host node_modules override
     depends_on:
       - db
 
