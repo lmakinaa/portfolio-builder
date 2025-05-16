@@ -12,6 +12,7 @@ model User {
   email         String    @unique
   hashedPassword      String
   portfolio     Portfolio?
+  messages      Message[]
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 }
@@ -24,7 +25,7 @@ model Portfolio {
   position    String
   description String
   projects    Project[]
-  skills      SkillsCategory[]
+  skills      Skill[]
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 }
@@ -43,12 +44,21 @@ model Project {
   updatedAt     DateTime @updatedAt
 }
 
-model SkillsCategory {
+model Skill {
   id          String    @id @default(cuid())
   portfolioId String
   portfolio   Portfolio @relation(fields: [portfolioId], references: [id])
-  name        String
+  category    String
   items       String[]
+}
+
+model Message {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id])
+  senderEmail String
+  subject     String
+  content     String
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 }

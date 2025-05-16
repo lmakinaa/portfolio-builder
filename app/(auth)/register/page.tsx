@@ -4,10 +4,27 @@ import { useState } from 'react';
 import { AlertCircle } from 'lucide-react';
 import { useTheme } from '@/app/contexts/ThemeContext';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 const Register = () => {
+    const signUp = async (email: string, password: string) => {
+        const response = await fetch('/api/auth/register', {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                email,
+                password
+            })
+        })
+        if (!response.ok)
+            throw new Error("Failed to create an account")
+        return await response.json();
+    }
+
     const { isDarkMode } = useTheme();
-    // const signUp = useAuthStore((state) => state.signUp);
+    const router = useRouter()
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -25,14 +42,14 @@ const Register = () => {
 
         setLoading(true);
 
-        // try {
-        //   await signUp(email, password);
-        //   // navigate('/admin/dashboard');
-        // } catch (err) {
-        //   setError('Registration failed');
-        // } finally {
-        //   setLoading(false);
-        // }
+        try {
+          await signUp(email, password);
+          router.push("/login")
+        } catch (err) {
+          setError('Registration failed');
+        } finally {
+          setLoading(false);
+        }
     };
 
     return (

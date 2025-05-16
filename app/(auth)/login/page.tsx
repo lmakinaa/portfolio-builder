@@ -18,14 +18,26 @@ const Login = () => {
     setError('');
     setLoading(true);
 
-    // try {
-    //   await signIn(email, password);
-    //   // navigate('/admin/dashboard');
-    // } catch (err) {
-    //   setError('Invalid credentials');
-    // } finally {
-    //   setLoading(false);
-    // }
+    try {
+      const res = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+      });
+
+      if (!res.ok) {
+        setError('Invalid credentials');
+      } else {
+        const data = await res.json();
+        const expires = new Date(Date.now() + 8 * 60 * 60 * 1000).toUTCString();
+        document.cookie = `token=${data.token}; path=/; secure; samesite=strict; expires=${expires}`;
+        window.location.href = '/panel';
+      }
+    } catch (err) {
+      setError('Something went wrong. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

@@ -1,7 +1,8 @@
 import { Code, Database, Server, Layers, Terminal, GitBranch, Activity, Lock } from 'lucide-react';
 import { useTheme } from '@/app/contexts/ThemeContext';
-import { skills } from '@/app/data/skills';
+import { skills as defaultSkills } from '@/app/data/skills';
 import { motion } from 'framer-motion';
+import { Portfolio } from '@/app/types';
 
 const SkillIcon = ({ name }: { name: string }) => {
   const icons = {
@@ -15,12 +16,15 @@ const SkillIcon = ({ name }: { name: string }) => {
     security: <Lock size={24} />
   };
   
-  const iconKey = name.toLowerCase() as keyof typeof icons;
+  const iconKey = name?.toLowerCase() as keyof typeof icons;
   return icons[iconKey] || <Code size={24} />;
 };
 
-const Skills = () => {
+type SkillsProps = Partial<Portfolio>;
+
+const Skills = ({ skills }: SkillsProps) => {
   const { isDarkMode } = useTheme();
+  const skillsToDisplay = skills || defaultSkills;
   
   return (
     <section 
@@ -40,7 +44,7 @@ const Skills = () => {
         </p>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {skills.map((category, index) => (
+          {skillsToDisplay.map((category, index) => (
             <motion.div
               key={index}
               initial={{ opacity: 0, y: 20 }}

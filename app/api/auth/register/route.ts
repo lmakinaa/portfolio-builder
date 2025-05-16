@@ -1,14 +1,12 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import prisma from '@/lib/prisma';
+import { generateToken } from '@/lib/jwt';
 import bcrypt from 'bcryptjs';
 
-const prisma = new PrismaClient();
-
-export async function POST(req: Request) {
+export async function POST(request: Request) {
   try {
-    const { email, password } = await req.json();
+    const { email, password } = await request.json();
 
-    // Validate input
     if (!email || !password) {
       return NextResponse.json(
         { error: 'Email and password are required' },
@@ -52,35 +50,27 @@ export async function POST(req: Request) {
     const user = await prisma.user.create({
       data: {
         email,
-        hashedPassword: hashedPassword,
+        hashedPassword,
       },
     });
 
-    // // Create portfolio for the user
-    // await prisma.portfolio.create({
-    //   data: {
-    //     userId: user.id,
-    //     title: `${name}'s Portfolio`,
-    //     description: 'Welcome to my portfolio!',
-    //   },
-    // });
+    const token = generateToken({
+      userId: user.id,
+      email: user.email,
+    });
 
-    // Return success response without sensitive data
-    return NextResponse.json(
-      { 
-        message: 'User created successfully',
-        user: {
-          id: user.id,
-          email: user.email,
-        }
+    return NextResponse.json({
+      token,
+      user: {
+        id: user.id,
+        email: user.email,
       },
-      { status: 201 }
-    );
+    });
   } catch (error) {
     console.error('Registration error:', error);
     return NextResponse.json(
-      { error: 'An error has happened during processing your request' },
-      { status: 412 }
+      { error: 'Internal Server Error' },
+      { status: 500 }
     );
   }
 } 

@@ -4,10 +4,10 @@ import { useTheme } from '@/app/contexts/ThemeContext';
 import { motion } from 'framer-motion';
 import { Portfolio } from '@/app/types';
 
-const Contact = ({email, github, linkedin}: Portfolio) => {
+const Contact = ({email, github, linkedin, userId}: Portfolio) => {
   const { isDarkMode } = useTheme();
   const [formData, setFormData] = useState({
-    name: '',
+    subject: '',
     email: '',
     message: ''
   });
@@ -18,22 +18,39 @@ const Contact = ({email, github, linkedin}: Portfolio) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
-  
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     
-    // Simulate form submission
-    setTimeout(() => {
-      setIsSubmitting(false);
+    try {
+      const response = await fetch('/api/message', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: userId,
+          senderEmail: formData.email,
+          subject: `Message from ${formData.subject}`,
+          content: formData.message
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to send message');
+      }
+
       setSubmitMessage('Thanks for your message! I\'ll get back to you soon.');
-      setFormData({ name: '', email: '', message: '' });
-      
-      // Clear success message after 5 seconds
+      setFormData({ subject: '', email: '', message: '' });
+    } catch (error) {
+      console.error('Error sending message:', error);
+      setSubmitMessage('Failed to send message. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+      // Clear success/error message after 5 seconds
       setTimeout(() => setSubmitMessage(''), 5000);
-    }, 1500);
+    }
   };
-  
   return (
     <section 
       id="contact"
@@ -64,18 +81,18 @@ const Contact = ({email, github, linkedin}: Portfolio) => {
             <form onSubmit={handleSubmit}>
               <div className="mb-4">
                 <label 
-                  htmlFor="name" 
+                  htmlFor="subject" 
                   className={`block text-sm font-medium mb-2 ${
                     isDarkMode ? 'text-gray-300' : 'text-gray-700'
                   }`}
                 >
-                  Name
+                  Subject
                 </label>
                 <input
                   type="text"
-                  id="name"
-                  name="name"
-                  value={formData.name}
+                  id="subject"
+                  name="subject"
+                  value={formData.subject}
                   onChange={handleChange}
                   required
                   className={`w-full px-3 py-2 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none ${

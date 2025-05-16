@@ -13,6 +13,7 @@ interface SkillsCategory {
 }
 
 export interface Portfolio {
+  userId: string;
   title: string;
   position: string;
   summary: string;
