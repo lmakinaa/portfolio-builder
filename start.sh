@@ -7,4 +7,4 @@ docker run -d \
   postgres ;
 
 cd srcs && npm i && export DATABASE_URL=postgresql://testusername:testpass@localhost:5432/portfolio_db &&\
-  npx prisma generate && npx prisma migrate deploy && npm run start;
+    npx prisma generate && npx prisma migrate deploy && npm run start -- --host 0.0.0.0 --port 80
