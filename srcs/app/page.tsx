@@ -1,6 +1,7 @@
 import prisma from '@/lib/prisma';
 import PortfolioPage from './p/components/PortfolioPage';
 
+export const dynamic = "force-dynamic";
 export default async function Home() {
     // Fetch the user with the specified email
     const user = await prisma.user.findUnique({
