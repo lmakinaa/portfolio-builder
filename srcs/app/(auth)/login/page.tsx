@@ -30,7 +30,7 @@ const Login = () => {
       } else {
         const data = await res.json();
         const expires = new Date(Date.now() + 8 * 60 * 60 * 1000).toUTCString();
-        document.cookie = `token=${data.token}; path=/; secure; samesite=strict; expires=${expires}`;
+        document.cookie = `token=${data.token}; path=/; expires=${expires}`;
         window.location.href = '/panel';
       }
     } catch (err) {
