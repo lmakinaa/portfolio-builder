@@ -16,7 +16,7 @@ export interface Portfolio {
   userId: string;
   title: string;
   position: string;
-  summary: string;
+  description: string;
   projects: Project[];
   skills: SkillsCategory[];
   email: string;

@@ -7,7 +7,8 @@ import { useTheme } from '@/app/contexts/ThemeContext';
 interface HeroProps {
   title: string;
   position: string;
-  summary: string;
+  description: string;
+  github: string;
   // customStyles?: {
   //   primaryColor?: string;
   //   secondaryColor?: string;
@@ -15,7 +16,7 @@ interface HeroProps {
   // };
 }
 
-export default function Hero({ title, position, summary }: HeroProps) {
+export default function Hero({ title, position, description, github }: HeroProps) {
   const heroRef = useRef<HTMLDivElement>(null);
   const { isDarkMode } = useTheme();
 
@@ -73,12 +74,12 @@ export default function Hero({ title, position, summary }: HeroProps) {
         </h1>
         
         <p className={`text-lg md:text-xl mb-8 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-          {summary}
+          {description}
         </p>
         
         <div className="flex justify-center space-x-4 mb-12">
           <a 
-            href="https://github.com/lmakinaa" 
+            href={github} 
             target="_blank" 
             rel="noopener noreferrer"
             className={`flex items-center py-2 px-4 rounded-lg transition-all duration-300 ${

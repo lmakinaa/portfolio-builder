@@ -26,6 +26,10 @@ model Portfolio {
   description String
   projects    Project[]
   skills      Skill[]
+  github      String
+  linkedin    String
+  phone       String
+  email       String
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 }

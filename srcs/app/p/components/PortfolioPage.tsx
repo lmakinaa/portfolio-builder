@@ -10,6 +10,7 @@ import Footer from '@/app/p/components/Footer';
 import { useTheme } from '@/app/contexts/ThemeContext';
 import {Portfolio} from '@/app/types/index'
 import { useRouter } from 'next/navigation';
+import WhatsAppBubble from './WhatsappBubble';
 
 
 function PortfolioPageComponent(portfolioData: Portfolio) {
@@ -46,12 +47,13 @@ function PortfolioPageComponent(portfolioData: Portfolio) {
     <div className={`min-h-screen ${isDarkMode ? 'bg-[#121826] text-white' : 'bg-gray-50 text-gray-900'} transition-colors duration-300`}>
       <Header activeSection={activeSection} title={portfolioData.title} />
       <main>
-        <Hero title={portfolioData.title} summary={portfolioData.summary} position={portfolioData.position} />
+        <Hero title={portfolioData.title} description={portfolioData.description} github={portfolioData.github} position={portfolioData.position} />
         <Projects {...portfolioData} />
         <Skills skills={portfolioData.skills} />
         <Contact {...portfolioData} />
       </main>
       <Footer />
+      {portfolioData.phone && <WhatsAppBubble phoneNumber={portfolioData.phone} />}
     </div>
   );
 }
@@ -81,7 +83,7 @@ export default function PortfolioPage({userId}:{userId: string}) {
         }
         
         const data = await response.json();
-        setPortfolioData(data);
+        setPortfolioData({ ...data});
         setError(null);
       } catch (err) {
         console.error('Error fetching portfolio data:', err);

@@ -36,6 +36,9 @@ interface PortfolioData {
   description: string;
   projects: Project[];
   skills: Skill[];
+  linkedin: string;
+  github: string;
+  phone: string;
 }
 
 // Helper function to extract JWT payload
@@ -46,7 +49,7 @@ const parseJwt = (token: string) => {
       console.error('Invalid token format');
       return null;
     }
-    
+
     // Properly decode the base64 payload
     const base64Url = token.split('.')[1];
     const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
@@ -56,7 +59,7 @@ const parseJwt = (token: string) => {
         .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
         .join('')
     );
-    
+
     return JSON.parse(jsonPayload);
   } catch (e) {
     console.error('Error parsing JWT token:', e);
@@ -85,6 +88,9 @@ export default function Dashboard() {
     description: "",
     projects: [],
     skills: [],
+    linkedin: "",
+    github: "",
+    phone: "",
   });
   const [newProject, setNewProject] = useState<Omit<Project, 'id'>>({
     title: "",
@@ -105,30 +111,30 @@ export default function Dashboard() {
   const [editingSkill, setEditingSkill] = useState<Skill | null>(null);
 
   // Helper function for API calls with authentication
-const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
-  // No need to manually add auth header as cookie will be sent automatically
-  const headers: any = {
-    'Content-Type': 'application/json',
-    'x-user-id': userId,
-    ...options.headers,
-  };
+  const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
+    // No need to manually add auth header as cookie will be sent automatically
+    const headers: any = {
+      'Content-Type': 'application/json',
+      'x-user-id': userId,
+      ...options.headers,
+    };
 
-  const response = await fetch(url, {
-    ...options,
-    headers,
-    credentials: 'include', // Ensures cookies are sent with the request
-  });
+    const response = await fetch(url, {
+      ...options,
+      headers,
+      credentials: 'include', // Ensures cookies are sent with the request
+    });
 
-  if (response.status === 401) {
-    // Token expired or invalid
-    if (typeof window !== 'undefined') {
-      window.location.href = '/login';
+    if (response.status === 401) {
+      // Token expired or invalid
+      if (typeof window !== 'undefined') {
+        window.location.href = '/login';
+      }
+      throw new Error('Authentication failed');
     }
-    throw new Error('Authentication failed');
-  }
 
-  return response;
-};
+    return response;
+  };
 
   // Extract userId from JWT token
   useEffect(() => {
@@ -136,20 +142,20 @@ const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
       try {
         // Find the token cookie
         const tokenCookie = document.cookie.split('; ').find(row => row.startsWith('token='));
-        
+
         if (!tokenCookie) {
           console.log('No token cookie found');
           return;
         }
-        
+
         const token = tokenCookie.split('=')[1];
         console.log('Token found in cookie:', token ? 'Token exists' : 'Token is empty');
-        
+
         if (!token) return;
-        
+
         const payload = parseJwt(token);
         console.log('JWT payload:', payload);
-        
+
         if (payload && payload.userId) {
           console.log('Setting userId:', payload.userId);
           setUserId(payload.userId);
@@ -172,11 +178,11 @@ const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        
+
         if (activeTab === 'messages') {
           // Fetch messages from API
           const response = await fetchWithAuth('/api/message');
-          
+
           if (response.ok) {
             const data = await response.json();
             setMessages(data);
@@ -186,14 +192,14 @@ const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
         } else if (activeTab === 'portfolio' || activeTab === 'projects') {
           // Always fetch portfolio data for both portfolio and projects tabs
           const response = await fetchWithAuth('/api/portfolio');
-          
+
           if (response.ok) {
             const portfolioResponse = await response.json();
-            
+
             // Fetch projects
             const projectsResponse = await fetchWithAuth('/api/project');
             const projects = projectsResponse.ok ? await projectsResponse.json() : [];
-            
+
             // For portfolio tab, also fetch skills
             let skills = [];
             if (activeTab === 'portfolio') {
@@ -203,13 +209,16 @@ const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
               // Preserve existing skills if we're just on the projects tab
               skills = portfolioData.skills;
             }
-            
+
             setPortfolioData({
               title: portfolioResponse.title || '',
               position: portfolioResponse.position || '',
               description: portfolioResponse.description || '',
               projects: projects || [],
               skills: skills || [],
+              linkedin: portfolioResponse.linkedin || '',
+              github: portfolioResponse.github || '',
+              phone: portfolioResponse.phone || '',
             });
           } else {
             console.error('Failed to fetch portfolio data');
@@ -227,13 +236,13 @@ const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
 
   const handleCopyPortfolioLink = async () => {
     if (!userId) return;
-    
+
     const portfolioUrl = `${window.location.origin}/p/${userId}`;
-    
+
     try {
       await navigator.clipboard.writeText(portfolioUrl);
       setCopySuccess(true);
-      
+
       // Reset success message after 3 seconds
       setTimeout(() => {
         setCopySuccess(false);
@@ -274,7 +283,7 @@ const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
       if (response.ok) {
         // Remove the message from the state
         setMessages(messages.filter(message => message.id !== id));
-        
+
         // Close the detail view if this message was being viewed
         if (selectedMessage?.id === id) {
           handleCloseMessageView();
@@ -290,7 +299,7 @@ const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
   // Portfolio management
   const handlePortfolioSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
+
     try {
       // Update portfolio info
       const portfolioResponse = await fetchWithAuth('/api/portfolio', {
@@ -299,6 +308,9 @@ const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
           title: portfolioData.title,
           position: portfolioData.position,
           description: portfolioData.description,
+          linkedin: portfolioData.linkedin,
+          github: portfolioData.github,
+          phone: portfolioData.phone,
         }),
       });
 
@@ -363,17 +375,17 @@ const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
             ...newProject
           }),
         });
-        
+
         if (response.ok) {
           // Get the newly created project from the response
           const createdProject = await response.json();
-          
+
           // Update local state with the new project
           setPortfolioData({
             ...portfolioData,
             projects: [...portfolioData.projects, createdProject],
           });
-          
+
           // Reset the form
           setNewProject({ title: "", description: "", technologies: [] });
           setNewTechnology("");
@@ -394,9 +406,9 @@ const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
     if (newSkill.category && newSkill.items.length > 0) {
       setPortfolioData({
         ...portfolioData,
-        skills: [...portfolioData.skills, { 
-          ...newSkill, 
-          id: `new-${Date.now().toString()}` 
+        skills: [...portfolioData.skills, {
+          ...newSkill,
+          id: `new-${Date.now().toString()}`
         }],
       });
       setNewSkill({ category: "", items: [] });
@@ -432,14 +444,14 @@ const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
         const response = await fetchWithAuth(`/api/project/${id}`, {
           method: 'DELETE',
         });
-        
+
         if (!response.ok) {
           console.error('Failed to delete project from API');
           alert('Failed to delete project. Please try again.');
           return;
         }
       }
-      
+
       // Update local state
       setPortfolioData({
         ...portfolioData,
@@ -459,14 +471,14 @@ const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
         const response = await fetchWithAuth(`/api/skills/${id}`, {
           method: 'DELETE',
         });
-        
+
         if (!response.ok) {
           console.error('Failed to delete skill from API');
           alert('Failed to delete skill. Please try again.');
           return;
         }
       }
-      
+
       // Update local state
       setPortfolioData({
         ...portfolioData,
@@ -481,13 +493,13 @@ const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
   // Start editing a project
   const handleEditProject = (project: Project) => {
     setEditingProjectId(project.id);
-    setEditingProject({...project});
+    setEditingProject({ ...project });
   };
 
   // Save edited project
   const handleSaveEditedProject = async () => {
     if (!editingProject) return;
-    
+
     try {
       // Only make API call for existing projects (not temporary ones)
       if (!editingProjectId?.startsWith('new-')) {
@@ -495,26 +507,26 @@ const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
           method: 'PUT',
           body: JSON.stringify(editingProject),
         });
-        
+
         if (!response.ok) {
           console.error('Failed to update project');
           alert('Failed to update project. Please try again.');
           return;
         }
       }
-      
+
       // Update local state
       setPortfolioData({
         ...portfolioData,
-        projects: portfolioData.projects.map(project => 
+        projects: portfolioData.projects.map(project =>
           project.id === editingProjectId ? editingProject : project
         )
       });
-      
+
       // Clear editing state
       setEditingProjectId(null);
       setEditingProject(null);
-      
+
     } catch (error) {
       console.error('Error updating project:', error);
       alert('Failed to update project. Please try again.');
@@ -524,13 +536,13 @@ const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
   // Start editing a skill
   const handleEditSkill = (skill: Skill) => {
     setEditingSkillId(skill.id);
-    setEditingSkill({...skill});
+    setEditingSkill({ ...skill });
   };
 
   // Save edited skill
   const handleSaveEditedSkill = async () => {
     if (!editingSkill) return;
-    
+
     try {
       // Only make API call for existing skills (not temporary ones)
       if (!editingSkillId?.startsWith('new-')) {
@@ -538,22 +550,22 @@ const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
           method: 'PUT',
           body: JSON.stringify(editingSkill),
         });
-        
+
         if (!response.ok) {
           console.error('Failed to update skill');
           alert('Failed to update skill. Please try again.');
           return;
         }
       }
-      
+
       // Update local state
       setPortfolioData({
         ...portfolioData,
-        skills: portfolioData.skills.map(skill => 
+        skills: portfolioData.skills.map(skill =>
           skill.id === editingSkillId ? editingSkill : skill
         )
       });
-      
+
       // Clear editing state
       setEditingSkillId(null);
       setEditingSkill(null);
@@ -566,7 +578,7 @@ const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
   // Add item to editing skill
   const handleAddItemToEditingSkill = (item: string) => {
     if (!editingSkill || !item) return;
-    
+
     setEditingSkill({
       ...editingSkill,
       items: [...editingSkill.items, item]
@@ -577,7 +589,7 @@ const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
   // Remove item from editing skill
   const handleRemoveItemFromEditingSkill = (itemIndex: number) => {
     if (!editingSkill) return;
-    
+
     setEditingSkill({
       ...editingSkill,
       items: editingSkill.items.filter((_, index) => index !== itemIndex)
@@ -587,7 +599,7 @@ const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
   // Add technology to editing project
   const handleAddTechToEditingProject = (tech: string) => {
     if (!editingProject || !tech) return;
-    
+
     setEditingProject({
       ...editingProject,
       technologies: [...editingProject.technologies, tech]
@@ -598,7 +610,7 @@ const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
   // Remove technology from editing project
   const handleRemoveTechFromEditingProject = (techIndex: number) => {
     if (!editingProject) return;
-    
+
     setEditingProject({
       ...editingProject,
       technologies: editingProject.technologies.filter((_, index) => index !== techIndex)
@@ -624,33 +636,30 @@ const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
         <div className="flex space-x-4 mb-8">
           <button
             onClick={() => setActiveTab('messages')}
-            className={`flex items-center px-4 py-2 rounded-lg transition-colors ${
-              activeTab === 'messages'
+            className={`flex items-center px-4 py-2 rounded-lg transition-colors ${activeTab === 'messages'
                 ? 'bg-indigo-600 text-white'
                 : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-            }`}
+              }`}
           >
             <Mail className="w-4 h-4 mr-2" />
             Messages
           </button>
           <button
             onClick={() => setActiveTab('portfolio')}
-            className={`flex items-center px-4 py-2 rounded-lg transition-colors ${
-              activeTab === 'portfolio'
+            className={`flex items-center px-4 py-2 rounded-lg transition-colors ${activeTab === 'portfolio'
                 ? 'bg-indigo-600 text-white'
                 : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-            }`}
+              }`}
           >
             <Briefcase className="w-4 h-4 mr-2" />
             Portfolio & Skills
           </button>
           <button
             onClick={() => setActiveTab('projects')}
-            className={`flex items-center px-4 py-2 rounded-lg transition-colors ${
-              activeTab === 'projects'
+            className={`flex items-center px-4 py-2 rounded-lg transition-colors ${activeTab === 'projects'
                 ? 'bg-indigo-600 text-white'
                 : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-            }`}
+              }`}
           >
             <Edit className="w-4 h-4 mr-2" />
             Projects
@@ -754,11 +763,10 @@ const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
                   <div className="relative">
                     <button
                       onClick={handleCopyPortfolioLink}
-                      className={`flex items-center px-4 py-2 rounded-lg transition-colors ${
-                        copySuccess
+                      className={`flex items-center px-4 py-2 rounded-lg transition-colors ${copySuccess
                           ? 'bg-green-600 text-white'
                           : 'bg-indigo-600 text-white hover:bg-indigo-700'
-                      }`}
+                        }`}
                     >
                       {copySuccess ? (
                         <>
@@ -806,6 +814,32 @@ const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
                 </div>
 
                 <div>
+                  <div className="flex gap-4 mb-4">
+                  <input
+                    type="text"
+                    value={portfolioData.linkedin}
+                    onChange={(e) => setPortfolioData({ ...portfolioData, linkedin: e.target.value })}
+                    placeholder="LinkedIn URL"
+                    className="flex-1 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  />
+                  <input
+                    type="text"
+                    value={portfolioData.github}
+                    onChange={(e) => setPortfolioData({ ...portfolioData, github: e.target.value })}
+                    placeholder="GitHub URL"
+                    className="flex-1 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  />
+                  <input
+                    type="text"
+                    value={portfolioData.phone}
+                    onChange={(e) => setPortfolioData({ ...portfolioData, phone: e.target.value })}
+                    placeholder="Phone Number"
+                    className="flex-1 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  />
+                  </div>
+                </div>
+
+                <div>
                   <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Description
                   </label>
@@ -831,7 +865,7 @@ const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
                               <input
                                 type="text"
                                 value={editingSkill?.category || ""}
-                                onChange={(e) => setEditingSkill({...editingSkill!, category: e.target.value})}
+                                onChange={(e) => setEditingSkill({ ...editingSkill!, category: e.target.value })}
                                 className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                               />
                               <div className="flex space-x-2">
@@ -854,7 +888,7 @@ const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
                                 </button>
                               </div>
                             </div>
-                            
+
                             <div className="flex flex-wrap gap-2">
                               {editingSkill?.items.map((item, index) => (
                                 <div key={index} className="flex items-center px-2 py-1 text-sm rounded-full bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
@@ -869,7 +903,7 @@ const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
                                 </div>
                               ))}
                             </div>
-                            
+
                             <div className="flex gap-2">
                               <input
                                 type="text"
@@ -969,7 +1003,7 @@ const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
           <div className="space-y-8">
             <div className="p-6 rounded-lg bg-white dark:bg-gray-900 dark:border dark:border-gray-800 shadow">
               <h2 className="text-xl font-semibold mb-6">Projects</h2>
-              
+
               <div className="space-y-4">
                 {portfolioData.projects.map((project) => (
                   <div key={project.id} className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
@@ -980,7 +1014,7 @@ const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
                           <input
                             type="text"
                             value={editingProject?.title || ""}
-                            onChange={(e) => setEditingProject({...editingProject!, title: e.target.value})}
+                            onChange={(e) => setEditingProject({ ...editingProject!, title: e.target.value })}
                             className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                           />
                           <div className="flex space-x-2">
@@ -1003,13 +1037,13 @@ const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
                             </button>
                           </div>
                         </div>
-                        
+
                         <textarea
                           value={editingProject?.description || ""}
-                          onChange={(e) => setEditingProject({...editingProject!, description: e.target.value})}
+                          onChange={(e) => setEditingProject({ ...editingProject!, description: e.target.value })}
                           className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent min-h-[100px]"
                         />
-                        
+
                         <div className="flex flex-wrap gap-2">
                           {editingProject?.technologies.map((tech, index) => (
                             <div key={index} className="flex items-center px-2 py-1 text-sm rounded-full bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
@@ -1024,7 +1058,7 @@ const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
                             </div>
                           ))}
                         </div>
-                        
+
                         <div className="flex gap-2">
                           <input
                             type="text"
@@ -1041,19 +1075,19 @@ const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
                             Add
                           </button>
                         </div>
-                        
+
                         <div className="flex gap-4">
                           <input
                             type="text"
                             value={editingProject?.githubUrl || ""}
-                            onChange={(e) => setEditingProject({...editingProject!, githubUrl: e.target.value})}
+                            onChange={(e) => setEditingProject({ ...editingProject!, githubUrl: e.target.value })}
                             placeholder="GitHub URL"
                             className="flex-1 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                           />
                           <input
                             type="text"
                             value={editingProject?.demoUrl || ""}
-                            onChange={(e) => setEditingProject({...editingProject!, demoUrl: e.target.value})}
+                            onChange={(e) => setEditingProject({ ...editingProject!, demoUrl: e.target.value })}
                             placeholder="Demo URL"
                             className="flex-1 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                           />
@@ -1119,7 +1153,7 @@ const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
                   </div>
                 ))}
               </div>
-              
+
               <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700 space-y-4">
                 <h3 className="text-lg font-medium">Add New Project</h3>
                 <div className="flex gap-4">
@@ -1174,7 +1208,7 @@ const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
                     Add Project
                   </button>
                 </div>
-                
+
                 {newProject.technologies.length > 0 && (
                   <div className="mt-4">
                     <h4 className="text-sm font-medium mb-2">Technologies:</h4>

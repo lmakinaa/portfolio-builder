@@ -30,4 +30,4 @@ COPY --from=builder /app/middleware.ts ./
 
 # Expose and run
 EXPOSE 3000
-CMD ["sh", "-c", "npx prisma migrate deploy && npm start"]
+CMD ["sh", "-c", "npx prisma migrate dev --name init && npx prisma migrate deploy && npm start"]

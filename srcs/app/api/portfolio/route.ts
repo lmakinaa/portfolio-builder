@@ -39,7 +39,7 @@ export async function POST(request: Request) {
     }
 
     const data = await request.json();
-    const { title, position, description } = data;
+    const { title, position, description, linkedin, github, phone } = data;
 
     const user = await prisma.user.findUnique({
       where: { id: userId },
@@ -54,18 +54,26 @@ export async function POST(request: Request) {
 
     const portfolio = await prisma.portfolio.upsert({
       where: {
-        userId: user.id,
+      userId: user.id,
       },
       update: {
-        title,
-        position,
-        description,
+      title,
+      position,
+      description,
+      linkedin,
+      github,
+      phone,
+      // email: user.email,
       },
       create: {
-        userId: user.id,
-        title,
-        position,
-        description,
+      userId: user.id,
+      title,
+      position,
+      description,
+      linkedin,
+      github,
+      phone,
+      email: user.email,
       },
     });
 
