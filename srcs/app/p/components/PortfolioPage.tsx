@@ -52,7 +52,7 @@ function PortfolioPageComponent(portfolioData: Portfolio) {
         <Skills skills={portfolioData.skills} />
         <Contact {...portfolioData} />
       </main>
-      <Footer />
+      <Footer title={portfolioData.title} />
       {portfolioData.phone && <WhatsAppBubble phoneNumber={portfolioData.phone} />}
     </div>
   );

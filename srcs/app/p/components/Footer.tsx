@@ -1,6 +1,6 @@
 import { useTheme } from '@/app/contexts/ThemeContext';
 
-const Footer = () => {
+const Footer = ({title}: any) => {
   const { isDarkMode } = useTheme();
   const currentYear = new Date().getFullYear();
   
@@ -9,7 +9,7 @@ const Footer = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row justify-between items-center">
           <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-            © {currentYear} Lamkina. All rights reserved.
+            © {currentYear} {title}. All rights reserved.
           </p>
           
           <div className="mt-4 md:mt-0">
