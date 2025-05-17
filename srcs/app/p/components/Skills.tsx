@@ -44,7 +44,7 @@ const Skills = ({ skills }: SkillsProps) => {
         </p>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {skillsToDisplay.map((category, index) => (
+          {skillsToDisplay.map((skillObject, index) => (
             <motion.div
               key={index}
               initial={{ opacity: 0, y: 20 }}
@@ -60,18 +60,18 @@ const Skills = ({ skills }: SkillsProps) => {
                 <div className={`p-2 rounded-lg mr-3 ${
                   isDarkMode ? 'bg-gray-800' : 'bg-gray-100'
                 }`}>
-                  <SkillIcon name={category.name} />
+                  <SkillIcon name={skillObject.category} />
                 </div>
-                <h3 className="text-xl font-bold">{category.name}</h3>
+                <h3 className="text-xl font-bold">{skillObject.category}</h3>
               </div>
               
               <ul className="space-y-2">
-                {category.items.map((skill, skillIndex) => (
+                {skillObject.items.map((skillName, skillIndex) => (
                   <li 
                     key={skillIndex} 
                     className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}
                   >
-                    {skill}
+                    {skillName}
                   </li>
                 ))}
               </ul>

@@ -3,7 +3,7 @@ import prisma from '@/lib/prisma';
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: any
 ) {
   try {
     const userId = request.headers.get('x-user-id');
@@ -47,7 +47,7 @@ export async function DELETE(
 
 export async function PATCH(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: any
 ) {
   try {
     const userId = request.headers.get('x-user-id');

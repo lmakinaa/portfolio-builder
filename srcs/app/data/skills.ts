@@ -1,6 +1,6 @@
 export const skills = [
   {
-    name: "Frontend",
+    category: "Frontend",
     items: [
       "React.js",
       "TypeScript",
@@ -10,7 +10,7 @@ export const skills = [
     ]
   },
   {
-    name: "Backend",
+    category: "Backend",
     items: [
       "Django",
       "FastAPI",
@@ -20,7 +20,7 @@ export const skills = [
     ]
   },
   {
-    name: "Database",
+    category: "Database",
     items: [
       "PostgreSQL",
       "Redis",
@@ -30,7 +30,7 @@ export const skills = [
     ]
   },
   {
-    name: "DevOps",
+    category: "DevOps",
     items: [
       "Docker",
       "Kubernetes",
@@ -40,7 +40,7 @@ export const skills = [
     ]
   },
   {
-    name: "Architecture",
+    category: "Architecture",
     items: [
       "Microservices",
       "RESTful APIs",
@@ -50,7 +50,7 @@ export const skills = [
     ]
   },
   {
-    name: "Version",
+    category: "Version",
     items: [
       "Git",
       "GitHub",
@@ -60,7 +60,7 @@ export const skills = [
     ]
   },
   {
-    name: "Monitoring",
+    category: "Monitoring",
     items: [
       "Prometheus",
       "Grafana",
@@ -70,7 +70,7 @@ export const skills = [
     ]
   },
   {
-    name: "Security",
+    category: "Security",
     items: [
       "OWASP Security",
       "Authentication & Authorization",

@@ -8,7 +8,7 @@ export interface Project {
 }
 
 interface SkillsCategory {
-  name: string;
+  category: string;
   items: string[];
 }
 
