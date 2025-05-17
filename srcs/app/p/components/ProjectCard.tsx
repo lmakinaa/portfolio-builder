@@ -59,9 +59,9 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, index, isActive, onC
         </div>
         
         <div className="flex space-x-3">
-          {project.repo && (
+          {project.githubUrl && (
             <a 
-              href={project.repo} 
+              href={project.githubUrl} 
               target="_blank" 
               rel="noopener noreferrer"
               className={`flex items-center text-sm font-medium ${
@@ -74,9 +74,9 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, index, isActive, onC
             </a>
           )}
           
-          {project.demo && (
+          {project.demoUrl && (
             <a 
-              href={project.demo} 
+              href={project.demoUrl} 
               target="_blank" 
               rel="noopener noreferrer"
               className={`flex items-center text-sm font-medium ${
